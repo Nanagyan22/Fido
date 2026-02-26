@@ -12,12 +12,46 @@ st.set_page_config(page_title="Fido Analytics Portal", layout="wide", initial_si
 # Primary: #D6086B (Magenta), Secondary: #A3F8FF (Aqua), Light: #FFFFFF (White)
 st.markdown("""
     <style>
-    /* Global Typography */
-    h1, h2, h3, h4 {
-        color: #D6086B !important;
+    /* =========================================
+       1. MAIN BANNER TEXT (Inside the Top Box) 
+       ========================================= */
+    .main-title {
+        color: #FFFFFF !important; /* <-- CHANGE MAIN TITLE COLOR HERE */
+        margin: 0; 
+        padding: 0; 
+        font-size: 2.2rem; 
+        line-height: 1.2;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
+    .main-subtitle {
+        color: #FFFFFF !important; /* <-- CHANGE SUBTITLE COLOR HERE */
+        margin: 0; 
+        padding-top: 5px; 
+        font-size: 1.1rem; 
+        font-weight: 500;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* =========================================
+       2. STREAMLIT HEADERS (st.header)
+       ========================================= */
+    h1, h2 {
+        color: #D6086B !important; /* <-- CHANGE NATIVE HEADER COLOR HERE */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* =========================================
+       3. STREAMLIT SUBHEADERS (st.subheader)
+       ========================================= */
+    h3, h4 {
+        color: #D6086B !important; /* <-- CHANGE NATIVE SUBHEADER COLOR HERE */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* =========================================
+       4. GENERAL APP STYLING
+       ========================================= */
     /* Horizontal Rule Gradient */
     hr {
         border: 0;
@@ -103,7 +137,7 @@ def get_image_base64(image_path):
             return base64.b64encode(img_file.read()).decode()
     return None
 
-logo_b64 = get_image_base64("logo.png") # Make sure your Fido logo is named logo.png in the same folder
+logo_b64 = get_image_base64("logo.png")
 
 if logo_b64:
     logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height: 60px; object-fit: contain; background-color: #FFFFFF; padding: 10px; border-radius: 8px; border: 2px solid #A3F8FF;">'
@@ -115,8 +149,8 @@ st.markdown(f"""
 <div class="main-header">
     <div>{logo_html}</div>
     <div>
-        <h1 style="color: #FFFFFF !important; margin: 0; padding: 0; font-size: 2.2rem; line-height: 1.2;">Fido Loan Portfolio & KYC Analytics</h1>
-        <p style="color: #FFFFFF !important; margin: 0; padding-top: 5px; font-size: 1.1rem; font-weight: 500;">Data Analysis Assessment | By Gloria Odamten</p>
+        <h1 class="main-title">Fido Loan Portfolio & KYC Analytics</h1>
+        <p class="main-subtitle">Data Analysis Assessment | By Gloria Odamten</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -135,7 +169,6 @@ with tab1:
         
         if view_selection == "📈 Power BI Loan Portfolio":
             st.subheader("Financial Cohort Performance")
-            # FIDO SPECIFIC IFRAME
             pbi_iframe = """
             <iframe title="Fido - Assessment_Dashboard" 
             width="100%" height="650" 
@@ -181,12 +214,12 @@ with tab1:
         LOAN PORTFOLIO (PART 1 KNOWLEDGE):
         {data_context}
         
-        Always answer as Francis's highly analytical AI assistant. Be concise. Use Fido's business context. If asked to rank the best portfolios, cite the Top 3 from the PRE-CALCULATED LOAN AGGREGATIONS.
+        Always answer as Gloria's highly analytical AI assistant. Be concise. Use Fido's business context. If asked to rank the best portfolios, cite the Top 3 from the PRE-CALCULATED LOAN AGGREGATIONS.
         """
         
         if "messages" not in st.session_state:
             st.session_state.messages = [
-                {"role": "assistant", "content": "Hello! I am 's AI Assistant. I have analyzed the Fido loan cohorts and the KYC funnel anomalies. How can I help you today?"}
+                {"role": "assistant", "content": "Hello! I am Gloria's AI Assistant. I have analyzed the Fido loan cohorts and the KYC funnel anomalies. How can I help you today?"}
             ]
 
         chat_container = st.container(height=360)
@@ -203,18 +236,26 @@ with tab1:
                     st.markdown(prompt)
                 
                 try:
-                    # Initialize Gemini
                     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-                    model = genai.GenerativeModel("gemini-1.5-flash") # Use flash for faster chat response
                     
-                    full_prompt = f"SYSTEM KNOWLEDGE:\n{system_instruction}\n\n--- CURRENT CONVERSATION ---\n"
-                    full_prompt += "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.messages])
+                    available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
                     
-                    response = model.generate_content(full_prompt)
-                    bot_reply = response.text
-                    
+                    if not available_models:
+                        bot_reply = "Error: Your API key is active, but it does not have access to any generation models. Check your Google AI Studio account."
+                    else:
+                        model_name = next((m for m in available_models if '1.5-flash' in m), available_models[0])
+                        
+                        model = genai.GenerativeModel(model_name)
+                        
+                        full_prompt = f"SYSTEM KNOWLEDGE & INSTRUCTIONS:\n{system_instruction}\n\n"
+                        full_prompt += "--- CURRENT CONVERSATION ---\n"
+                        full_prompt += "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.messages])
+                        
+                        response = model.generate_content(full_prompt)
+                        bot_reply = response.text
+                        
                 except Exception as e:
-                    bot_reply = f"System Error: Please ensure your Streamlit secrets are configured properly with GEMINI_API_KEY. Details: {e}"
+                    bot_reply = f"System Error: {e}"
                 
                 with st.chat_message("assistant"):
                     st.markdown(bot_reply)
