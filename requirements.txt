@@ -1,0 +1,10 @@
+streamlit
+pandas
+google-generativeai
+openai
+python-dotenv
+google-generativeai
+pandas
+streamlit
+pandas
+google-generativeai>=0.8.2
