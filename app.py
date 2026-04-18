@@ -150,7 +150,7 @@ st.markdown(f"""
     <div>{logo_html}</div>
     <div>
         <h1 class="main-title">Fido Loan Portfolio & KYC Analytics</h1>
-        <p class="main-subtitle">Data Analysis Assessment | By Gloria Odamten</p>
+        <p class="main-subtitle">Data Analysis Assessment | By Francis Afful Gyan</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -197,7 +197,7 @@ with tab1:
         st.write("")
         
         system_instruction = f"""
-        You are the Senior Data Assistant for Fido, built by Data Analyst Gloria Odamten.
+        You are the Senior Data Assistant for Fido, built by Data Analyst Francis Afful Gyan.
         You have complete knowledge of the Loan Portfolio Power BI dashboard and the KYC Funnel analysis.
         
         KYC FUNNEL ANALYSIS (PART 2 KNOWLEDGE):
@@ -214,12 +214,12 @@ with tab1:
         LOAN PORTFOLIO (PART 1 KNOWLEDGE):
         {data_context}
         
-        Always answer as Gloria's highly analytical AI assistant. Be concise. Use Fido's business context. If asked to rank the best portfolios, cite the Top 3 from the PRE-CALCULATED LOAN AGGREGATIONS.
+        Always answer as Francis highly analytical AI assistant. Be concise. Use Fido's business context. If asked to rank the best portfolios, cite the Top 3 from the PRE-CALCULATED LOAN AGGREGATIONS.
         """
         
         if "messages" not in st.session_state:
             st.session_state.messages = [
-                {"role": "assistant", "content": "Hello! I am Gloria's AI Assistant. I have analyzed the Fido loan cohorts and the KYC funnel anomalies. How can I help you today?"}
+                {"role": "assistant", "content": "Hello! I am Francis AI Assistant. I have analyzed the Fido loan cohorts and the KYC funnel anomalies. How can I help you today?"}
             ]
 
         chat_container = st.container(height=360)
